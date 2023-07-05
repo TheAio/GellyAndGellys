@@ -87,7 +87,7 @@ function move(Dir)
   Pos=NPos
 end
 ----EXECUTE
-while true
+while true do
   print("THE GAME CODE IS NOT YET READY")
   break
 end
