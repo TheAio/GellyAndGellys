@@ -88,6 +88,10 @@ function move(Dir)
 end
 ----EXECUTE
 while true do
+  print("WELLCOME TO GNG!")
+  print("Type 'new' to begin a new game!")
+  print("Type 'load' to load a new game!")
+  drawMap(56)
   print("THE GAME CODE IS NOT YET READY")
   break
 end
