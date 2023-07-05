@@ -54,3 +54,40 @@ function hurtCard(MyCardsID,HPMod,WHOMod,ATTMod,DEFMod,SPDMod)
   local orgDEF = MyCards[MyCardsID][5]
   local orgSPD = MyCards[MyCardsID][6]
 end
+function StoryEvent(Building,StoryLevel) --TODO; HIGH PIORITY
+  print("THE STORY FEATURE DOES NOT YET EXIST")
+end
+function RollEncounter() --TODO; HIGH PRIORITY
+  print("RANDOM ENCOUNTERS DOES NOT YET EXIST")
+end
+function move(Dir)
+  if Dir == "U" then
+    NPos=Pos-10
+  elseif Dir == "D" then
+    NPos=Pos+10
+  elseif Dir == "L" then
+    NPos=Pos-1
+  elseif Dir == "R" then
+    NPos=Pos+1
+  end
+  if NPos > #MapData then
+    NPos=Pos
+  elseif NPos < 1 then
+    NPos=Pos
+  end
+  if MapData[NPos] == 3 or MapData[NPos] == 1 then
+    NPos=Pos
+  elseif MapData[NPos] > 100 then
+    StoryEvent(NPos,StoryLevel)
+  end
+  if NPos == Pos then
+  else
+    RollEncounter()
+  end
+  Pos=NPos
+end
+----EXECUTE
+while true
+  print("THE GAME CODE IS NOT YET READY")
+  break
+end
