@@ -1,3 +1,4 @@
+---@diagnostic disable: lowercase-global
 --This is the first version of GNG, for more information see readme.lua
 ----DATA
 Map={
@@ -27,6 +28,7 @@ Inventory={}
 MyCards={}
 --{...{id,hp,WHOMod,ATTMod,DEFMod,SPDMod}...}
 Pos=56
+StoryLevel=0
 ----CODE
 function drawMap(pos)
   j=0
@@ -36,9 +38,9 @@ function drawMap(pos)
       print("")
     end
     if i==pos then
-      print("¤")
+      io.write("¤")
     else
-      print(Map[i])
+      io.write(Map[i])
     end
   end
     print("C=the clubhouse, F=The café, S=The stage, M=The market")
@@ -46,6 +48,9 @@ function drawMap(pos)
 end
 function giveCard(id)
   MyCards[#MyCards+1]={id,100,0,0,0,0}
+end
+function giveItem(id)
+  Inventory[#Inventory+1] = Items[id]
 end
 function hurtCard(MyCardsID,HPMod,WHOMod,ATTMod,DEFMod,SPDMod)
   local orgHP = MyCards[MyCardsID][2]
@@ -86,12 +91,82 @@ function move(Dir)
   end
   Pos=NPos
 end
+function LoadGame(saveCode)
+  if saveCode == nil then
+    print("INTRO TEXT HERE")
+  else
+    saveCode = tostring(tonumber(saveCode,16))
+    Pos=tonumber(string.sub(saveCode,1,2))
+    StoryLevel=tonumber(string.sub(saveCode,3,4))
+    i=tonumber(string.sub(saveCode,5,7))
+    for j=1,i do
+      giveItem(string.sub(saveCode,7+j,7+j))
+    end
+    j=tonumber(string.sub(saveCode,8+i,10+i))
+    for k=1,j do
+      giveCard(k)
+    end
+  end
+end
+function SaveGame()
+  if Pos < 10 then
+    Pos = "0"..tostring(Pos)
+  else
+    Pos = tostring(Pos)
+  end
+  if StoryLevel < 10 then
+    StoryLevel = "0"..tostring(StoryLevel)
+  else
+    StoryLevel = tostring(StoryLevel)
+  end
+  ItemCountAsStr=tostring(#Inventory)
+  ItemIds = ""
+  for i=1,#Inventory do
+    for j=1,#Items do
+      if Items[j][1] == Inventory[i][1] then
+        ItemIds = ItemIds+tostring(j)
+      end
+    end
+  end
+  CardCountAsStr=tostring(#MyCards)
+  CardIds = ""
+  for i=1,#MyCards do
+    for j=1,#Cards do
+      if Cards[j][1] == MyCards[i][1] then
+        CardIds = CardIds..tostring(j)
+      end
+    end
+  end
+  if tonumber(ItemCountAsStr) < 10 then
+    ItemCountAsStr="00"..ItemCountAsStr
+  elseif tonumber(ItemCountAsStr) < 100 then
+    ItemCountAsStr="0"..ItemCountAsStr
+  end
+  if tonumber(CardCountAsStr) < 10 then
+    CardCountAsStr="00"..CardCountAsStr
+  elseif tonumber(CardCountAsStr) < 100 then
+    CardCountAsStr="0"..CardCountAsStr
+  end
+  saveCode = Pos..StoryLevel..ItemCountAsStr..ItemIds..CardCountAsStr..CardIds
+  saveCode = ('%X'):format(saveCode)
+  return saveCode
+end
 ----EXECUTE
 while true do
+  print("V=L5.1-A1@".._VERSION)
   print("WELLCOME TO GNG!")
   print("Type 'new' to begin a new game!")
   print("Type 'load' to load a new game!")
+  print("Type 'quit' to exit!")
   drawMap(56)
   print("THE GAME CODE IS NOT YET READY")
-  break
+  print("IT WILL PROBORBLY CRASH")
+  inp=string.upper(io.read(1))
+  if inp == "N" then
+    LoadGame()
+  elseif inp == "L" then
+    LoadGame()
+  elseif inp == "Q" then
+    break
+  end
 end
