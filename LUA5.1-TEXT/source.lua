@@ -32,9 +32,15 @@ StoryLevel=0
 ----CODE
 function drawMap(pos)
   j=0
-  for i=1,#Map do
+  i=0
+  while true do
+    i=i+1
     j=j+1
+    if i == #Map +1 then
+      break
+    end
     if j==11 then
+      j=1
       print("")
     end
     if i==pos then
@@ -43,6 +49,7 @@ function drawMap(pos)
       io.write(Map[i])
     end
   end
+    print("")
     print("C=the clubhouse, F=The café, S=The stage, M=The market")
     print(">=The portal, B=Starting point, #=grass, /=water")
 end
@@ -149,6 +156,9 @@ function SaveGame()
   end
   saveCode = Pos..StoryLevel..ItemCountAsStr..ItemIds..CardCountAsStr..CardIds
   saveCode = ('%X'):format(saveCode)
+  if string.len(tostring(saveCode)) < 10 then
+    saveCode="0"..tostring(saveCode)
+  end
   return saveCode
 end
 ----EXECUTE
@@ -163,9 +173,11 @@ while true do
   print("IT WILL PROBORBLY CRASH")
   inp=string.upper(io.read(1))
   if inp == "N" then
-    LoadGame()
+    LoadGame(nil)
   elseif inp == "L" then
-    LoadGame()
+    print(SaveGame())
+    print("Please enter your save code:")
+    LoadGame(string.upper(tostring(io.read(10))))
   elseif inp == "Q" then
     break
   end
