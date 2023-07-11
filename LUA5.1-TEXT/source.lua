@@ -1,4 +1,4 @@
----@diagnostic disable: lowercase-global
+---@diagnostic disable: lowercase-global, undefined-global
 --This is the first version of GNG, for more information see readme.lua
 ----DATA
 Map={
@@ -44,9 +44,9 @@ function drawMap(pos)
       print("")
     end
     if i==pos then
-      io.write("¤")
+      write("¤")
     else
-      io.write(Map[i])
+      write(Map[i])
     end
   end
     print("")
@@ -163,7 +163,7 @@ function SaveGame()
 end
 ----EXECUTE
 while true do
-  print("V=L5.1-A1@".._VERSION)
+  print("V=CC:T5.1-A1_R-ABANDON @".._VERSION.." by ".._HOST)
   print("WELLCOME TO GNG!")
   print("Type 'new' to begin a new game!")
   print("Type 'load' to load a new game!")
@@ -171,13 +171,13 @@ while true do
   drawMap(56)
   print("THE GAME CODE IS NOT YET READY")
   print("IT WILL PROBORBLY CRASH")
-  inp=string.upper(io.read(1))
+  inp=string.upper(read())
   if inp == "N" then
     LoadGame(nil)
   elseif inp == "L" then
     print(SaveGame())
     print("Please enter your save code:")
-    LoadGame(string.upper(tostring(io.read(10))))
+    LoadGame(string.upper(tostring(read(10))))
   elseif inp == "Q" then
     break
   end
