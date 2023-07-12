@@ -206,6 +206,10 @@ end
 ----ONLINE MULTIPLAYER FUNCTIONS
 
 ----EXECUTE
+if _VERSION == "Lua 5.1" then
+else
+    ErrorReport(true,"VC@E","Wrong lua version!",3)
+end
 while true do
     ErrorReport(true,"@E","Game is not ready yet",2)
     term.clear()
@@ -221,6 +225,22 @@ while true do
     inp=string.upper(read())
     if inp == "NEW" then
       LoadGame(nil)
+    elseif inp == "DEV" then
+        ErrorReport(true,"@E","STARTING DEV MODE",2)
+        printError("WAIT")
+        printError("*   *   *  *** ***")
+        printError("* * *  *-*  *   * ")
+        printError(" * *   * * ***  * ")
+        printError("This place may be dangerus if you do not know what you are doing!")
+        sleep(3)
+        term.clear()
+        term.setCursorPos(1,1)
+        printError("This is DEV mode, please be careful!")
+        while true do            
+            print("Enter code to execute:")
+            ---@diagnostic disable-next-line: deprecated
+            assert(loadstring(read()))()
+        end
     elseif inp == "LOAD" then
       print(SaveGame())
       print("Please enter your save code:")
