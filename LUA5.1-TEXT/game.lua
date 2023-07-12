@@ -232,14 +232,41 @@ while true do
         printError("* * *  *-*  *   * ")
         printError(" * *   * * ***  * ")
         printError("This place may be dangerus if you do not know what you are doing!")
-        sleep(3)
+        print("Press enter to conutinue")
+        read()
         term.clear()
         term.setCursorPos(1,1)
         printError("This is DEV mode, please be careful!")
-        while true do            
-            print("Enter code to execute:")
-            ---@diagnostic disable-next-line: deprecated
-            assert(loadstring(read()))()
+        while true do
+            print("1. cheatCode 2. e-code 3. e-shell")
+            i=CleanInput(1,3)
+            if i == 1 then
+                print("Enter cheat code:")
+                i=CleanInput(1,5)
+                if i == 1 then
+                    for i=1,#ErrorLog do
+                        print(ErrorLog[i][1],ErrorLog[i][2],ErrorLog[i][3])
+                    end
+                elseif i == 2 then
+                    for i=1,#InitItems do
+                        Give(i,"item")
+                        sleep(0)
+                    end
+                    for i=1,#Cards do
+                        Give(i,"card")
+                        sleep(0)
+                    end
+                elseif i == 3 then
+                    print("Enter 1 or 2")
+                    RandomEncounter(1,1/CleanInput(1,2))
+                end
+            elseif i == 2 then
+                print("Enter code to execute:")
+                ---@diagnostic disable-next-line: deprecated
+                assert(loadstring(read()))()
+            elseif i == 3 then
+                shell.run(read())
+            end
         end
     elseif inp == "LOAD" then
       print(SaveGame())
