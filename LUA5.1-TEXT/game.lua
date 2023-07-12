@@ -7,14 +7,62 @@ InitItems={{"Tofu",10,20,5},{"Noodle-Soup",25,51,10},{"Gellibo-Soup",50,100,25},
 UserCards={}
 --{...{Name,Card,HP,ATTMod}...}
 UserItems={}
+--{...id...}
+UserMagic=0
+ErrorLog = {}
+--{...{trace,text,level}...}
 ----CORE GAME FUNCTIONS
+function ErrorReport(isWrite,trace,text,level)
+    --levels: 1 - minor addon issue 2 - minor game issue or major addon issue 3 - major game issue (panic)    
+    if isWrite then
+        ErrorLog[#ErrorLog+1] = {trace,text,level}
+        if level > 1 then
+            printError(trace,"is causing a level 2 error!")
+            sleep(2)
+        elseif level > 2 then
+            printError("LUA PANIC")
+            printError("Something has gone very wrong!")
+            printError("'"..text.."'")
+            printError("If you submit a bug report or ask for help, include the following:")
+            printError("----BEGIN DATA DUMP----")
+            printError("#ErrorLog",#ErrorLog)
+            printError("#C&#II:",#Cards,#InitItems)
+            error(text.." "..trace.." "..level,2)
+        end
+    end
+end
+function CleanInput(min,max)
+    local ox,oy=term.getCursorPos()
+    while true do
+        local rawinp = read()
+        local inp = tonumber(rawinp)
+        if inp == nil then
+        elseif inp > min-1 then
+            if inp < max+1 then
+                return inp
+            end
+        end
+        term.setCursorPos(ox,oy)
+        print(string.rep(" ",string.len(rawinpinp)))
+        term.setCursorPos(ox,oy)
+    end
+end
 function Random()
-    if tonumber(string.sub(os.clock(),string.len(os.clock),string.len(os.clock))) > 5 then
+    if tonumber(string.sub(os.clock(),string.len(os.clock()),string.len(os.clock()))) > 5 then
         randomBool = true
     else
         randomBool = false
     end
     return randomBool
+end
+function Give(ID,Type) --Type is 'item' or 'card'
+    if Type == "item" then
+        UserItems[#UserItems+1] = ID
+    elseif Type == "card" then
+        UserCards[#UserCards+1] = {Cards[ID][1],ID,100,0}
+    else
+        ErrorReport(true,"Give@CGF","invalid type",2)
+    end
 end
 function Damage(UserCardID,GiverAtt,GiverSpd,GiverInt)
     local initHp = UserCards[CardID][3]
@@ -40,12 +88,21 @@ function Damage(UserCardID,GiverAtt,GiverSpd,GiverInt)
     end
     return 25
 end
-function Attack(CardID)
-    if UserCards[CardID][3] == 0 then
+function Attack(UserCardID)
+    if UserCards[UserCardID][3] == 0 then
+        return false
+    elseif UserMagic < Cards[UserCardID[2]][8] then
         return false
     else
-        return true
+        UserMagic = UserMagic - Cards[UserCardID[2]][8]
     end
+end
+function HealCard(UserCardID,HPMod,ATTMod)
+    UserCards[UserCardID][3] = UserCards[UserCardID][3]+HPMod
+    UserCards[UserCardID][4] = UserCards[UserCardID][4]+ATTMod
+end
+function UseItem(UserItemID,UserCardID)
+    HealCard(UserCardID,InitItems[UserItems[UserItemID]][3],InitItems[UserItems[UserItemID]][4])
 end
 function DrawEncounter(UserCardID,EnemyName)
     term.clear()
@@ -59,6 +116,7 @@ function DrawEncounter(UserCardID,EnemyName)
     print("3. Wait a turn")
 end
 ----SINGLEPLAYER FUNCTIONS
+Cash=0
 function LoadGame(code)
     
 end
@@ -70,6 +128,30 @@ function simulateCard(id,dmg)
     return {Cards[id][1],id,100-dmg,0}
 end
 ]]
+function shop()
+    while true do
+        term.clear()
+        term.setCursorPos(1,1)
+        print("SHOP")
+        print("You have",Cash,"gellystars!")
+        print("The items you can afford are:")
+        print("0. Return")
+        local j={}
+        for i=1,#InitItems do
+            if Cash > InitItems[i][2]-1 then
+                j[#j+1] = i
+                print(#j..".",InitItems[i][1],"for",InitItems[i][2])
+            end
+            sleep(0)
+        end
+        i=CleanInput(0,#j)
+        if i == 0 then
+            break
+        else
+            
+        end
+    end
+end
 local function encounter(UserCardID,id)
     local dmgPool=0
     while true do
@@ -89,9 +171,19 @@ local function encounter(UserCardID,id)
                 end
                 break
             elseif i == 2 then
+                if #UserItems > 0 then
+                    print("Select item to use:")
+                    for j=1,#UserItems do
+                        print(j,UserItems[j])
+                    end
+                    UseItem(CleanInput(1,#UserItems),UserCardID)
+                else
+                    print("You dont own any!")
+                    sleep(3)
+                end
                 break
             elseif i == 3 then
-                break
+                UserMagic=UserMagic+2
             end
         end
     end
@@ -115,6 +207,7 @@ end
 
 ----EXECUTE
 while true do
+    ErrorReport(true,"@E","Game is not ready yet",2)
     term.clear()
     term.setCursorPos(1,1)
     print("V=CC:T5.1-A2 @".._VERSION.." by ".._HOST)
@@ -137,4 +230,10 @@ while true do
     elseif inp == "QUIT" then
       break
     end
-  end
+end
+term.setCursorPos(1,1)
+term.clear()
+print("Thank you for playing!")
+for i=1,#ErrorLog do
+    print(i,ErrorLog[i][1])
+end
