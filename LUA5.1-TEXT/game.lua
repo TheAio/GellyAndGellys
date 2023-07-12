@@ -16,7 +16,7 @@ function ErrorReport(isWrite,trace,text,level)
     --levels: 1 - minor addon issue 2 - minor game issue or major addon issue 3 - major game issue (panic)    
     if isWrite then
         ErrorLog[#ErrorLog+1] = {trace,text,level}
-        if level > 1 then
+        if level == 2 then
             printError(trace,"is causing a level 2 error!")
             sleep(2)
         elseif level > 2 then
