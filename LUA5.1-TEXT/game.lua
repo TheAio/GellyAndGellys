@@ -65,8 +65,13 @@ function Give(ID,Type) --Type is 'item' or 'card'
     end
 end
 function Damage(UserCardID,GiverAtt,GiverSpd,GiverInt)
-    local initHp = UserCards[CardID][3]
-    if GiverAtt < Cards[UserCards[UserCardID][2]] + UserCards[UserCardID][4] then
+    local initHp = UserCards[UserCardID][3]
+    for i=1,#Cards do
+        if Cards[i][1] == UserCards[UserCardID][1] then
+            baseAtt = Cards[i][3]
+        end
+    end
+    if GiverAtt < baseAtt + UserCards[UserCardID][4] then
         if Random() then
             return 0
         end
@@ -109,7 +114,7 @@ function DrawEncounter(UserCardID,EnemyName)
     term.setCursorPos(1,1)
     print("You are batteling",EnemyName)
     print("Your card has",UserCards[UserCardID][3],"hp remaining")
-    print("You have",MagicPoints,"magic remaining")
+    print("You have",UserMagic,"magic remaining")
     print("Your card uses",Cards[UserCardID][8],"magic each attack")
     print("1. Attack")
     print("2. Use item")
@@ -259,6 +264,9 @@ while true do
                 elseif i == 3 then
                     print("Enter 1 or 2")
                     RandomEncounter(1,1/CleanInput(1,2))
+                elseif i == 4 then
+                    Cash = tonumber(CleanInput(-999,999))
+                    shop()
                 end
             elseif i == 2 then
                 print("Enter code to execute:")
