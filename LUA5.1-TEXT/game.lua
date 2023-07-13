@@ -153,11 +153,21 @@ function shop()
         print("0. Return")
         local j={}
         for i=1,#InitItems do
-            if Cash > InitItems[i][2]-1 then
-                j[#j+1] = i
-                print(#j..".",InitItems[i][1],"for",InitItems[i][2])
-            end
+            k=false
             sleep(0)
+            for a=1,#UserItems do
+                if InitItems[i][1] == InitItems[UserItems[a]][1] then
+                    k=true
+                    break
+                end
+                sleep(0)
+            end
+            if k == false then
+                if Cash > InitItems[i][2]-1 then
+                    j[#j+1] = i
+                    print(#j..".",InitItems[i][1],"for",InitItems[i][2])
+                end
+            end
         end
         i=CleanInput(0,#j)
         if i == 0 then
