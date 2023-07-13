@@ -410,6 +410,35 @@ function SinglePlayer(data)
 end
 ----ONLINE MULTIPLAYER FUNCTIONS
 
+----ADDON HOOKING
+if fs.exists("addons/") then
+    if fs.exists("addons/items/") then
+        i=fs.list("addons/items/")
+        if #i == 0 then
+            ErrorReport(true,"I@AH","items folder exists but is empty",1)
+        else
+            for j=1,#i do
+                k=fs.open(i[j])
+                InitItems[#InitItems+1] = {k.readLine(),tonumber(k.readLine()),tonumber(k.readLine()),tonumber(k.readLine())}
+                k.close()
+                sleep(0)
+            end
+        end
+    end
+    if fs.exists("addons/cards/") then
+        i=fs.list("addons/cards/")
+        if #i == 0 then
+            ErrorReport(true,"C@AH","cards folder exists but is empty",1)
+        else
+            for j=1,#i do
+                k=fs.open(i[j])
+                Cards[#Cards+1] = {k.readLine(),tonumber(k.readLine()),tonumber(k.readLine()),tonumber(k.readLine()),tonumber(k.readLine()),tonumber(k.readLine()),tonumber(k.readLine()),tonumber(k.readLine()),tonumber(k.readLine()),tonumber(k.readLine())}
+                k.close()
+                sleep(0)
+            end
+        end
+    end
+end
 ----EXECUTE
 if _VERSION == "Lua 5.1" then
 else
