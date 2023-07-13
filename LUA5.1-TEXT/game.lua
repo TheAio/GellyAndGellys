@@ -416,19 +416,27 @@ else
     ErrorReport(true,"VC@E","Wrong lua version!",3)
 end
 while true do
-    ErrorReport(true,"MM@E","Game is not ready yet",2)
+    ErrorReport(true,"MM@E","Game is in beta!",2)
     term.clear()
     term.setCursorPos(1,1)
     print("V=CC:T5.1-B1 @".._VERSION.." by ".._HOST)
-    print("WELLCOME TO GNG!")
+    print("WELCOME TO GNG!")
     print("Type 'new' to begin a new game!")
     print("Type 'load' to load a saved game!")
-    print("Type 'online' for multiplayer")
+    print("Type 'online' for multiplayer!")
     print("Type 'quit' to exit!")
-    print("THE GAME CODE IS NOT YET READY")
+    print("Type 'about' for more info!")
+    print("THE GAME CODE IS IN BETA")
     print("IT WILL PROBORBLY CRASH")
     inp=string.upper(read())
-    if inp == "NEW" then
+    if inp == "ABOUT" then
+        textutils.slowPrint("GNG (Gelly and Gellys) is a game based of a card game based around a discord server")
+        textutils.slowPrint("The code is licensed under the GNU General Public License v3.0")
+        textutils.slowPrint("please see https://github.com/TheAio/GellyAndGellys/blob/main/LICENSE for more information")
+        textutils.slowPrint("Now that you have explored this menu here is a secrate left behind by Aio")
+        textutils.slowPrint("If you type 'DEV' in the main menu you get a secrate menu!")
+        sleep(5)
+    elseif inp == "NEW" then
       LoadGame(nil)
       SinglePlayer()
     elseif inp == "DEV" then
@@ -490,6 +498,10 @@ end
 term.setCursorPos(1,1)
 term.clear()
 print("Thank you for playing!")
-for i=1,#ErrorLog do
-    print(i,ErrorLog[i][1])
+if #ErrorLog > 0 then
+    print("The following are all errors reported during gameplay:")
+    for i=1,#ErrorLog do
+        print(i,ErrorLog[i][1])
+        sleep(0)
+    end
 end
