@@ -109,15 +109,14 @@ end
 function UseItem(UserItemID,UserCardID)
     HealCard(UserCardID,InitItems[UserItems[UserItemID]][3],InitItems[UserItems[UserItemID]][4])
     local ot = UserItems
+    UserItems={}
     for i=1,#ot do
-        if i == UserItemID then
+        if InitItems[ot[i]][1] == InitItems[ot[UserItemID]][1] then
         else
             UserItems[i] = ot[i]
         end
         sleep(0)
     end
-    UserItems[UserItemID] = nil
-
 end
 function DrawEncounter(UserCardID,EnemyName)
     term.clear()
@@ -181,6 +180,7 @@ end
 local function encounter(UserCardID,id)
     local dmgPool=0
     local enemyDMG=0
+    local visited=false
     while true do
         term.clear()
         term.setCursorPos(1,1)
@@ -194,7 +194,7 @@ local function encounter(UserCardID,id)
                     term.setCursorPos(1,1)
                     if Random() then
                         print("You missed!")
-                        HealCard(UserCardID,-10,0)
+                        HealCard(UserCardID,-5,0)
                     else
                         print("You almost missed!")
                         dmg = 15
@@ -208,6 +208,11 @@ local function encounter(UserCardID,id)
                 break
             elseif i == 2 then
                 if #UserItems > 0 then
+                    if visited then
+                        print("You may only use items once!")
+                        break
+                    end
+                    visited=true
                     print("Select item to use:")
                     for j=1,#UserItems do
                         print(j..".",InitItems[UserItems[j]][1])
@@ -219,7 +224,7 @@ local function encounter(UserCardID,id)
                 end
                 break
             elseif i == 3 then
-                HealCard(UserCardID,-10,0)
+                HealCard(UserCardID,-5,0)
                 UserMagic=UserMagic+2
                 break
             end
