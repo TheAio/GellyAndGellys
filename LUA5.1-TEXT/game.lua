@@ -131,6 +131,7 @@ function DrawEncounter(UserCardID,EnemyName)
 end
 ----SINGLEPLAYER FUNCTIONS
 Cash=0
+Difficulty = 1
 function LoadGame(code)
     
 end
@@ -194,7 +195,7 @@ local function encounter(UserCardID,id)
                     term.setCursorPos(1,1)
                     if Random() then
                         print("You missed!")
-                        HealCard(UserCardID,-5,0)
+                        HealCard(UserCardID,-2*Difficulty,0)
                     else
                         print("You almost missed!")
                         dmg = 15
@@ -224,7 +225,7 @@ local function encounter(UserCardID,id)
                 end
                 break
             elseif i == 3 then
-                HealCard(UserCardID,-5,0)
+                HealCard(UserCardID,-1*Difficulty,0)
                 UserMagic=UserMagic+2
                 break
             end
@@ -298,8 +299,6 @@ function SinglePlayer(data)
     local level = 0
     Cash = 0
     UserMagic = 10
-    --load stuff
-    --play game
     if data == nil then
         term.clear()
         term.setCursorPos(1,1)
@@ -471,8 +470,10 @@ while true do
         textutils.slowPrint("If you type 'DEV' in the main menu you get a secrate menu!")
         sleep(5)
     elseif inp == "NEW" then
-      LoadGame(nil)
-      SinglePlayer()
+        print("Enter a difficulty level 1 - 3")
+        Difficulty=CleanInput(1,3)
+        LoadGame(nil)
+        SinglePlayer()
     elseif inp == "DEV" then
         ErrorReport(true,"@E","STARTING DEV MODE",2)
         printError("WAIT")
