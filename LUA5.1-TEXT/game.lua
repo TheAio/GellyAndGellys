@@ -43,7 +43,7 @@ function CleanInput(min,max)
             end
         end
         term.setCursorPos(ox,oy)
-        print(string.rep(" ",string.len(rawinpinp)))
+        term.clearLine()
         term.setCursorPos(ox,oy)
     end
 end
@@ -87,9 +87,9 @@ function Damage(UserCardID,GiverAtt,GiverSpd,GiverInt)
         end
     end
     if initHp < 25 then
-        UserCards[CardID][3] = 0
+        UserCards[UserCardID][3] = 0
     else
-        UserCards[CardID][3] = UserCards[CardID][3] - 25
+        UserCards[UserCardID][3] = UserCards[UserCardID][3] - 25
     end
     return 25
 end
@@ -108,6 +108,16 @@ function HealCard(UserCardID,HPMod,ATTMod)
 end
 function UseItem(UserItemID,UserCardID)
     HealCard(UserCardID,InitItems[UserItems[UserItemID]][3],InitItems[UserItems[UserItemID]][4])
+    local ot = UserItems
+    for i=1,#ot do
+        if i == UserItemID then
+        else
+            UserItems[i] = ot[i]
+        end
+        sleep(0)
+    end
+    UserItems[UserItemID] = nil
+
 end
 function DrawEncounter(UserCardID,EnemyName)
     term.clear()
@@ -153,12 +163,14 @@ function shop()
         if i == 0 then
             break
         else
-            
+            Give(j[i],"item")
+            Cash = Cash - InitItems[j[i]][2]
         end
     end
 end
 local function encounter(UserCardID,id)
     local dmgPool=0
+    local enemyDMG=0
     while true do
         term.clear()
         term.setCursorPos(1,1)
@@ -170,16 +182,25 @@ local function encounter(UserCardID,id)
                 if dmg == 0 then
                     term.clear()
                     term.setCursorPos(1,1)
-                    print("You missed!")
+                    if Random() then
+                        print("You missed!")
+                        HealCard(UserCardID,-10,0)
+                    else
+                        print("You almost missed!")
+                        dmg = 15
+                    end
                 else
                     print("You hit the enemy!")
                 end
+                sleep(1)
+                UserMagic = UserMagic - Cards[UserCardID][8]
+                enemyDMG = enemyDMG + dmg
                 break
             elseif i == 2 then
                 if #UserItems > 0 then
                     print("Select item to use:")
                     for j=1,#UserItems do
-                        print(j,UserItems[j])
+                        print(j..".",InitItems[UserItems[j]][1])
                     end
                     UseItem(CleanInput(1,#UserItems),UserCardID)
                 else
@@ -188,23 +209,193 @@ local function encounter(UserCardID,id)
                 end
                 break
             elseif i == 3 then
+                HealCard(UserCardID,-10,0)
                 UserMagic=UserMagic+2
+                break
             end
+        end
+        if enemyDMG > 49 then
+            term.setCursorPos(1,1)
+            term.clear()
+            textutils.slowPrint("YOU WIN!")
+            HealCard(UserCardID,10,0)
+            Cash = Cash + 10
+            return true
+        end
+        if UserCards[selectedCard][3] < 1 then
+            term.clear()
+            term.setCursorPos(1,1)
+            textutils.slowPrint("Uhoh, your card has no more HP")
+            textutils.slowPrint("That means...")
+            textutils.slowPrint(".............")
+            term.clear()
+            term.setCursorPos(1,1)
+            textutils.slowPrint("G A M E   O V E R")
+            term.setCursorPos(1,1)
+            textutils.slowPrint("                 ")
+            return false
         end
     end
 end
 function RandomEncounter(UserCardID,seed) --seed is a value in the range 0-1
     if seed > 0.5 then
         if Random() then
-            encounter(UserCardID,1)
+            i=encounter(UserCardID,1)
         else
-            encounter(UserCardID,3)
+            i=encounter(UserCardID,3)
         end
     else
         if Random() then
-            encounter(UserCardID,6)
+            i=encounter(UserCardID,6)
         else
-            encounter(UserCardID,7)
+            i=encounter(UserCardID,7)
+        end
+    end
+    return i
+end
+function SinglePlayer(data)
+    local function giveNewCard()
+        for i = 1,#UserCards do
+            for j = 1,#Cards do
+                if UserCards[i][2] == j then
+                else
+                    textutils.slowPrint("You got a...")
+                    Give(j,"card")
+                    print(UserCards[#UserCards][1],"card!")
+                    sleep(3)
+                    return true
+                end
+            end
+        end
+    end
+    local function drawChapterIntro(level)
+        term.clear()
+        term.setCursorPos(1,1)
+        print("Chapter",level)
+        textutils.slowPrint("-------")
+        sleep(1)
+        term.clear()
+        term.setCursorPos(1,1)
+    end
+    local function drawStory(level,event)
+        
+    end
+    local level = 0
+    Cash = 0
+    UserMagic = 10
+    --load stuff
+    --play game
+    if data == nil then
+        term.clear()
+        term.setCursorPos(1,1)
+        textutils.slowPrint("Welcome to GNG!")
+        textutils.slowPrint("Narator - One time long ago on some garden somewhere on a planet,")
+        textutils.slowPrint("there was a collection of nice and friendly beings, happy as ever.")
+        ErrorReport(true,"SP@SF","Code not complete - field empty",2)
+        textutils.slowPrint("But then one day the evil <NAME HERE> turned everyone evil!")
+        textutils.slowPrint("luckily you and... who - who is that?")
+        textutils.slowPrint("You - that is, that is... uh... that's")
+        print("1. Nemo","2. UPD-giraffe")
+        i=CleanInput(1,2)
+        if i == 1 then
+            Give(3,"card")
+            textutils.slowPrint("Nemo!")
+        else
+            Give(6,"card")
+            textutils.slowPrint("UPD-giraffe!")
+        end
+        sleep(1)
+        term.clear()
+        term.setCursorPos(1,1)
+        textutils.slowPrint("Narator - Right, anyways the two of you somehow managed to survive!")
+        textutils.slowPrint("After months of research you figure out that the only way to turn everyone back")
+        textutils.slowPrint("to normal was by makeing them unconsious. Obviously the best way to do that is")
+        textutils.slowPrint("by magic violance!")
+        print("1. that does not sound so nice!")
+        print("2. yeah, violance!")
+        print("3. why should i trust you?")
+        i=CleanInput(1,3)
+        if i == 1 then
+            textutils.slowPrint("Hey im the narrator, im telling you what to do.")
+        elseif i == 2 then
+            textutils.slowPrint("Yeah that's the spirit!")
+        else
+            textutils.slowPrint("Look you! Im the narrator, this is not some stanleys parable you should just trust me!")
+        end
+        textutils.slowPrint("Now go play the game!")
+        selectedCard=1
+        sleep(2)
+    end
+    recentLevel = level
+    rand=true   
+    drawChapterIntro(level)
+    while true do
+        textutils.slowPrint("Do you want to visit the shop?")
+        print("1. Yes 2. No")
+        inp = CleanInput(1,2)
+        if inp == 1 then
+            shop()
+        end
+        if UserCards[selectedCard][3] < 1 then
+            term.clear()
+            term.setCursorPos(1,1)
+            textutils.slowPrint("Uhoh, your card has no more HP")
+            textutils.slowPrint("That means...")
+            textutils.slowPrint(".............")
+            term.clear()
+            term.setCursorPos(1,1)
+            textutils.slowPrint("G A M E   O V E R")
+            term.setCursorPos(1,1)
+            textutils.slowPrint("                 ")
+            return true
+        elseif UserCards[selectedCard][3] < 25 then
+            term.clear()
+            term.setCursorPos(1,1)
+            textutils.slowPrint("Your card is very hurt!")
+            if #UserItems > 0 then
+                while true do
+                    print("Do you want to use an item on your card?")
+                    print("0 no, go back")
+                    for i=1,#UseItems do
+                        print(i,"use",UserItems[i])
+                    end
+                    print(#UserItems+1,"go to the store")
+                    inp = CleanInput()
+                    if inp == 0 then
+                        break
+                    elseif inp == #UserItems+1 then
+                        shop()
+                    else
+                        UseItem(inp,selectedCard)
+                    end
+                end
+            end
+        end
+        if rand then
+            rand = false
+        else
+            rand = true
+        end
+        if level == recentLevel then
+            if rand then
+                i=RandomEncounter(selectedCard,1)
+            else
+                i=RandomEncounter(selectedCard,0)
+            end
+            if i then
+                level = level + 1
+            else
+                return true
+            end
+        else
+            drawChapterIntro(level)
+            if #UserCards > #Cards-1 then
+                print("Enter a number between 1 and",#Items)
+                giveItem(CleanInput(1,#Items))
+            end
+            giveNewCard()
+            drawChapterIntro(level)
+            recentLevel = level
         end
     end
 end
@@ -216,10 +407,10 @@ else
     ErrorReport(true,"VC@E","Wrong lua version!",3)
 end
 while true do
-    ErrorReport(true,"@E","Game is not ready yet",2)
+    ErrorReport(true,"MM@E","Game is not ready yet",2)
     term.clear()
     term.setCursorPos(1,1)
-    print("V=CC:T5.1-A2 @".._VERSION.." by ".._HOST)
+    print("V=CC:T5.1-B1 @".._VERSION.." by ".._HOST)
     print("WELLCOME TO GNG!")
     print("Type 'new' to begin a new game!")
     print("Type 'load' to load a saved game!")
@@ -230,6 +421,7 @@ while true do
     inp=string.upper(read())
     if inp == "NEW" then
       LoadGame(nil)
+      SinglePlayer()
     elseif inp == "DEV" then
         ErrorReport(true,"@E","STARTING DEV MODE",2)
         printError("WAIT")
