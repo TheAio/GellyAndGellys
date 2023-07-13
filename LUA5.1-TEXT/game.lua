@@ -374,7 +374,7 @@ function SinglePlayer(data)
                         print(i,"use",UserItems[i])
                     end
                     print(#UserItems+1,"go to the store")
-                    inp = CleanInput()
+                    inp = CleanInput(0,#UserItems+1)
                     if inp == 0 then
                         break
                     elseif inp == #UserItems+1 then
