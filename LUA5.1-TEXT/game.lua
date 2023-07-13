@@ -370,7 +370,7 @@ function SinglePlayer(data)
                 while true do
                     print("Do you want to use an item on your card?")
                     print("0 no, go back")
-                    for i=1,#UseItems do
+                    for i=1,#UserItems do
                         print(i,"use",UserItems[i])
                     end
                     print(#UserItems+1,"go to the store")
